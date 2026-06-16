@@ -1,0 +1,18 @@
+Q3 Planning Meeting — October 15, 2024
+Attendees: Sarah, John, Mike, Priya
+
+Action Items:
+- Sarah will finish the API documentation by Friday
+- John: please migrate the production database ASAP
+- Mike will write unit tests for the auth module by next week
+- Priya: update the deployment runbook when possible
+
+Decisions:
+- We agreed to adopt trunk-based development
+- Launch date moved to November 1
+- On-call rotation will expand to include the new team members
+
+Key Points:
+- The current CI pipeline is too slow — average build time is 18 minutes
+- We need better test coverage before the launch (currently at 42 %)
+- Customer feedback from beta suggests the onboarding flow needs work
