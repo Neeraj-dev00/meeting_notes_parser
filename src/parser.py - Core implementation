@@ -1,0 +1,82 @@
+parser_content = '''"""
+Meeting Notes Parser - Core Implementation
+
+This module provides the MeetingNotesParser class for extracting
+action items, decisions, and key points from unstructured meeting notes.
+"""
+
+import json
+import csv
+import io
+import re
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Any, Tuple
+from dataclasses import dataclass, asdict
+from dateutil import parser as date_parser
+from dateutil.relativedelta import relativedelta
+
+@dataclass
+class ActionItem:
+"""Represents a single action item extracted from meeting notes."""
+task: str
+owner: Optional[str] = None
+deadline: Optional[str] = None
+priority: str = "medium"
+confidence: float = 0.85
+
+def to_dict(self) -> Dict[str, Any]:      
+    return asdict(self)
+
+@dataclass
+class MeetingNotesResult:
+"""Container for all parsed meeting notes data."""
+meeting_info: Dict[str, Any]
+action_items: List[ActionItem]
+decisions: List[str]
+key_points: List[str]
+
+def export_json(self, indent: int = 2) -> str:      
+    """Export results to JSON format."""      
+    data = {      
+        "meeting_info": self.meeting_info,      
+        "action_items": [item.to_dict() for item in self.action_items],      
+        "decisions": self.decisions,      
+        "key_points": self.key_points,      
+    }      
+    return json.dumps(data, indent=indent, default=str)      
+  
+def export_csv(self) -> str:      
+    """Export action items to CSV format."""      
+    output = io.StringIO()      
+    fieldnames = ["task", "owner", "deadline", "priority", "confidence"]      
+    writer = csv.DictWriter(output, fieldnames=fieldnames)      
+    writer.writeheader()      
+    for item in self.action_items:      
+        writer.writerow(item.to_dict())      
+    return output.getvalue()      
+  
+def to_slack_message(self) -> str:      
+    """Format results as a Slack message."""      
+    blocks = ["*Meeting Notes Summary*"]      
+    if self.meeting_info.get("title"):      
+        blocks.append(f"*Title:* {self.meeting_info['title']}")      
+    if self.meeting_info.get("date"):      
+        blocks.append(f"*Date:* {self.meeting_info['date']}")      
+    blocks.append(f"\\n*Action Items ({len(self.action_items)}):*")      
+    for i, item in enumerate(self.action_items, 1):      
+        owner_part = f" ( @{item['owner']} )" if item['owner'] else ""      
+        deadline_part = f" by {item['deadline']}" if item['deadline'] else ""      
+        priority_emoji = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(item['priority'], "⚪")      
+        blocks.append(f"{i}. {item['task']}{owner_part}{deadline_part} {priority_emoji}")      
+    if self.decisions:      
+        blocks.append(f"\\n*Decisions ({len(self.decisions)}):*")      
+        for i, decision in enumerate(self.decisions, 1):      
+            blocks.append(f"{i}. {decision}")      
+    return "\\n".join(blocks)
+
+class MeetingNotesParser:
+"""
+Parser for extracting structured data from unstructured meeting notes.
+
+Features:      
+- Extract action items with owners, deadlines, and priorities
