@@ -323,4 +323,3 @@ class MeetingNotesParser:
             if item and len(item) > 2:
                 results.append(item)
         return results
-  
